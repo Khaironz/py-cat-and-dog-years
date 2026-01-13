@@ -2,22 +2,33 @@ import pytest
 import app.main as main
 
 
-def test_negative_ages() -> None:
-    assert main.get_human_age(-1, -10) == [0, 0]
-    assert main.get_human_age(-15, 24) == [0, 2]
+@pytest.mark.parametrize(
+    "cat_age, dog_age, expected",
+    [
+        (-1, -10, [0, 0]),
+        (-15, 24, [0, 2]),
+    ],
+)
+def test_negative_ages(
+    cat_age: int,
+    dog_age: int,
+    expected: list[int],
+) -> None:
+    assert main.get_human_age(cat_age, dog_age) == expected
 
 
-def test_should_raise_type_error_for_strings() -> None:
+@pytest.mark.parametrize(
+    "cat_age, dog_age",
+    [
+        ("15", 20),
+        (20, "20"),
+        (15.5, 20),
+        (20, 24.0),
+    ],
+)
+def test_invalid_types_raise_type_error(
+    cat_age: object,
+    dog_age: object,
+) -> None:
     with pytest.raises(TypeError):
-        main.get_human_age("15", 20)
-
-    with pytest.raises(TypeError):
-        main.get_human_age(20, "20")
-
-
-def test_should_raise_type_error_for_floats() -> None:
-    with pytest.raises(TypeError):
-        main.get_human_age(15.5, 20)
-
-    with pytest.raises(TypeError):
-        main.get_human_age(20, 24.0)
+        main.get_human_age(cat_age, dog_age)
